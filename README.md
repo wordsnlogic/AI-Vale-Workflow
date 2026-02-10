@@ -23,6 +23,7 @@ Vale is excellent at *identifying* documentation issues, but it doesn’t help w
 AI is excellent at *rewriting*, but unsafe when given too much autonomy.
 
 This workflow deliberately combines the two:
+
 - Vale remains the **source of truth**
 - AI provides **targeted, scoped suggestions**
 - Humans remain **in control of every change**
@@ -43,8 +44,10 @@ This workflow deliberately combines the two:
 
 ## Example output (exact terminal output)
 
-The examples below show **exactly what the script prints in the terminal**.  
-Tables may appear vertically expanded due to fixed-width wrapping—this is intentional and mirrors real CLI behavior.
+The examples below show **exactly what the script prints in the terminal**.
+
+Tables may appear vertically expanded due to fixed-width wrapping.  
+This is intentional and mirrors real CLI behavior.
 
 Each example includes:
 - A short readable summary
@@ -62,18 +65,19 @@ Each example includes:
 
 **Exact terminal output**
 
+```text
 +--------------------+-------------------------+------------------------------------------------------------+
-| Before AI | After AI | Vale Comment |
+| Before AI          | After AI                | Vale Comment                                               |
 +====================+=========================+============================================================+
-| Please ensure that | Ensure that the user is | Avoid using “please” in technical documentation. |
-| the user is | notified when the | |
-| notified when the | backup is completed. | |
-| backup is | | |
-| completed. | | |
+| Please ensure that | Ensure that the user is | Avoid using “please” in technical documentation.           |
+| the user is        | notified when the       |                                                            |
+| notified when the  | backup is completed.    |                                                            |
+| backup is          |                         |                                                            |
+| completed.         |                         |                                                            |
 +--------------------+-------------------------+------------------------------------------------------------+
 
 Apply this change? (y/n):
-
+```
 
 ---
 
@@ -87,17 +91,18 @@ Apply this change? (y/n):
 
 **Exact terminal output**
 
+```text
 +--------------------+-------------------------+------------------------------------------------------------+
-| Before AI | After AI | Vale Comment |
+| Before AI          | After AI                | Vale Comment                                               |
 +====================+=========================+============================================================+
-| Click the Create | Select Create | Avoid “click.” Use a more general verb. |
-| Project button to | Project to start a | |
-| start a new ACME | new ACME Cloud project. | |
-| Cloud project. | | |
+| Click the Create   | Select **Create         | Avoid “click.” Use a more general verb.                    |
+| Project button to  | Project** to start a    |                                                            |
+| start a new ACME   | new ACME Cloud project. |                                                            |
+| Cloud project.     |                         |                                                            |
 +--------------------+-------------------------+------------------------------------------------------------+
 
 Apply this change? (y/n):
-
+```
 
 ---
 
@@ -111,29 +116,32 @@ Apply this change? (y/n):
 
 **Exact terminal output**
 
+```text
 +--------------------+-------------------------+------------------------------------------------------------+
-| Before AI | After AI | Vale Comment |
+| Before AI          | After AI                | Vale Comment                                               |
 +====================+=========================+============================================================+
-| In order to | To authenticate, the | Use simpler words when possible. |
-| successfully | client must use a valid | |
-| authenticate, the | token. | |
-| client must | | |
-| utilize a valid | | |
-| token. | | |
+| In order to        | To authenticate, the    | Use simpler words when possible.                           |
+| successfully       | client must use a valid |                                                            |
+| authenticate, the  | token.                  |                                                            |
+| client must        |                         |                                                            |
+| utilize a valid    |                         |                                                            |
+| token.             |                         |                                                            |
 +--------------------+-------------------------+------------------------------------------------------------+
 
 Apply this change? (y/n):
-
+```
 
 ---
 
 ## What gets sent to the AI
 
 For each Vale issue, the script sends:
+
 - The **exact flagged line**
 - The **Vale message**
 
 It does **not** send:
+
 - The entire file
 - Surrounding paragraphs
 - The full documentation set
@@ -145,6 +153,7 @@ This design keeps the workflow safer, predictable, and auditable.
 ## Requirements
 
 ### Tools
+
 - **Python 3.9+**
 - **Vale CLI** installed and available on your `PATH`
 - A documentation repo containing:
@@ -153,6 +162,7 @@ This design keeps the workflow safer, predictable, and auditable.
   - Vale rule styles (for example, Microsoft)
 
 ### Python dependency
+
 - `openai`
 
 ---
@@ -160,104 +170,126 @@ This design keeps the workflow safer, predictable, and auditable.
 ## Install
 
 ### 1) Clone this repo
+
 ```bash
 git clone https://github.com/<your-org-or-username>/ai-vale-workflow.git
 cd ai-vale-workflow
-2) Create and activate a virtual environment
+```
+
+### 2) Create and activate a virtual environment
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-3) Install dependencies
+```
+
+### 3) Install dependencies
+
+```bash
 pip install openai
-Configure OpenAI API key
+```
+
+---
+
+## Configure OpenAI API key
+
 Set your API key as an environment variable:
 
+```bash
 export OPENAI_API_KEY="YOUR_KEY_HERE"
+```
+
 If the key is missing, the script exits with:
 
+```text
 ERROR: OPENAI_API_KEY not found in environment.
+```
 
+---
 
-
-
-Ensure Vale works first
+## Ensure Vale works first
 
 Before using AI, confirm Vale runs successfully in your documentation repo:
 
+```bash
 vale path/to/docs
-
+```
 
 This workflow assumes:
 
-Vale is installed
+- Vale is installed
+- `.vale.ini` is discoverable
+- Rules resolve correctly
 
-.vale.ini is discoverable
+---
 
-Rules resolve correctly
-
-Usage
+## Usage
 
 The script supports:
 
---file to process a single Markdown file
+- `--file` to process a single Markdown file
+- `--folder` to process a folder recursively
+- `--dry-run` to preview changes without writing to disk
 
---folder to process a folder recursively
+### Single file
 
---dry-run to preview changes without writing to disk
-
-Single file
+```bash
 python ai_vale_workflow.py --file path/to/docs/index.md
+```
 
-Folder (recursive)
+### Folder (recursive)
+
+```bash
 python ai_vale_workflow.py --folder path/to/docs/
+```
 
-Dry run (recommended first)
+### Dry run (recommended first)
+
+```bash
 python ai_vale_workflow.py --folder path/to/docs/ --dry-run
-
+```
 
 For each issue, you’ll be prompted:
 
+```text
 Apply this change? (y/n):
+```
 
-Safety and editorial control
+---
+
+## Safety and editorial control
 
 This tool is intentionally conservative.
 
-It does:
+It **does**:
 
-Require human approval
+- Require human approval
+- Edit only flagged lines
+- Print file and line number confirmations
+- Encourage manual re-validation
 
-Edit only flagged lines
+It **does not**:
 
-Print file and line number confirmations
+- Auto-rewrite files
+- Apply changes silently
+- Replace editorial judgment
+- Re-run Vale automatically
 
-Encourage manual re-validation
+---
 
-It does not:
+## Known limitations
 
-Auto-rewrite files
-
-Apply changes silently
-
-Replace editorial judgment
-
-Re-run Vale automatically
-
-Known limitations
-
-Line-based replacement assumes the issue fits on one line
-
-Multi-line or structural issues may require manual edits
-
-Vale rule output formats may vary by rule pack
+- Line-based replacement assumes the issue fits on one line
+- Multi-line or structural issues may require manual edits
+- Vale rule output formats may vary by rule pack
 
 These constraints are deliberate to preserve trust.
 
-Recommended team workflow
+---
 
-Run with --dry-run first
+## Recommended team workflow
 
-Apply changes in small batches
-
-Re-run Vale and review diffs
-
-Merge through standard PR review
+1. Run with `--dry-run` first
+2. Apply changes in small batches
+3. Re-run Vale and review diffs
+4. Merge through standard PR review
