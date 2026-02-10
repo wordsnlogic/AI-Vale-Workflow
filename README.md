@@ -19,10 +19,13 @@ This tool:
 ## Demo video
 
 The short demo below shows the **exact terminal experience**, including:
+
 - Vale findings
 - AI rewrite suggestions
 - Human approval prompts
 - Line-specific edits applied to disk
+
+> Runtime: ~90 seconds · No audio · Real terminal output
 
 <video controls width="100%">
   <source src="vale_ai_script_demo_cut_no_audio.mp4" type="video/mp4">
@@ -68,6 +71,8 @@ Each example includes:
 - A short readable summary
 - The raw terminal output for full transparency
 
+---
+
 ### Example 1: Politeness (“please”)
 
 **Summary**
@@ -90,3 +95,178 @@ Each example includes:
 +--------------------+-------------------------+------------------------------------------------------------+
 
 Apply this change? (y/n):
+```
+
+---
+
+### Example 2: UI interaction language (“click”)
+
+**Summary**
+
+- Vale enforces device-neutral language
+- AI rewrites UI instructions
+- Markdown formatting is preserved
+
+**Exact terminal output**
+
+```text
++--------------------+-------------------------+------------------------------------------------------------+
+| Before AI          | After AI                | Vale Comment                                               |
++====================+=========================+============================================================+
+| Click the Create   | Select **Create         | Avoid “click.” Use a more general verb.                    |
+| Project button to  | Project** to start a    |                                                            |
+| start a new ACME   | new ACME Cloud project. |                                                            |
+| Cloud project.     |                         |                                                            |
++--------------------+-------------------------+------------------------------------------------------------+
+
+Apply this change? (y/n):
+```
+
+---
+
+### Example 3: Complex wording → simpler language
+
+**Summary**
+
+- Vale flags unnecessarily complex phrasing
+- AI simplifies wording without semantic drift
+- Writer remains the final decision-maker
+
+**Exact terminal output**
+
+```text
++--------------------+-------------------------+------------------------------------------------------------+
+| Before AI          | After AI                | Vale Comment                                               |
++====================+=========================+============================================================+
+| In order to        | To authenticate, the    | Use simpler words when possible.                           |
+| successfully       | client must use a valid |                                                            |
+| authenticate, the  | token.                  |                                                            |
+| client must        |                         |                                                            |
+| utilize a valid    |                         |                                                            |
+| token.             |                         |                                                            |
++--------------------+-------------------------+------------------------------------------------------------+
+
+Apply this change? (y/n):
+```
+
+---
+
+## What gets sent to the AI
+
+For each Vale issue, the script sends:
+
+- The **exact flagged line**
+- The **Vale message**
+
+It does **not** send:
+
+- The entire file
+- Surrounding paragraphs
+- The full documentation set
+
+This design keeps the workflow safer, predictable, and auditable.
+
+---
+
+## Requirements
+
+### Tools
+
+- **Python 3.9+**
+- **Vale CLI** installed and available on your `PATH`
+- A documentation repo containing:
+  - Markdown files (`.md`)
+  - A `.vale.ini`
+  - Vale rule styles (for example, Microsoft)
+
+### Python dependency
+
+- `openai`
+
+---
+
+## Install
+
+### 1) Clone this repo
+
+```bash
+git clone https://github.com/<your-org-or-username>/ai-vale-workflow.git
+cd ai-vale-workflow
+```
+
+### 2) Create and activate a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3) Install dependencies
+
+```bash
+pip install openai
+```
+
+---
+
+## Configure OpenAI API key
+
+Set your API key as an environment variable:
+
+```bash
+export OPENAI_API_KEY="YOUR_KEY_HERE"
+```
+
+If the key is missing, the script exits with:
+
+```text
+ERROR: OPENAI_API_KEY not found in environment.
+```
+
+---
+
+## Ensure Vale works first
+
+Before using AI, confirm Vale runs successfully in your documentation repo:
+
+```bash
+vale path/to/docs
+```
+
+---
+
+## Usage
+
+The script supports:
+
+- `--file` to process a single Markdown file
+- `--folder` to process a folder recursively
+- `--dry-run` to preview changes without writing to disk
+
+```bash
+python ai_vale_workflow.py --folder path/to/docs/ --dry-run
+```
+
+---
+
+## Safety and editorial control
+
+This tool is intentionally conservative.
+
+It **does**:
+- Require human approval
+- Edit only flagged lines
+
+It **does not**:
+- Auto-rewrite files
+- Apply changes silently
+- Replace editorial judgment
+
+---
+
+## Recommended team workflow
+
+1. Run with `--dry-run` first
+2. Apply changes in small batches
+3. Re-run Vale and review diffs
+4. Merge through standard PR review
