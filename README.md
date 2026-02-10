@@ -19,9 +19,12 @@ This tool:
 
 ## Demo video
 
-GitHub does **not reliably render embedded `<video>` tags** inside README files.
 
-To ensure the demo is always accessible, use the links below.
+
+https://github.com/user-attachments/assets/3a657c15-89ab-4654-a6dc-21e17e6c2a2c
+
+
+
 
 ▶️ **Watch / download the demo video (recommended)**  
 https://raw.githubusercontent.com/wordsnlogic/AI-Vale-Workflow/main/vale_ai_script_demo_cut_no_audio.mp4
