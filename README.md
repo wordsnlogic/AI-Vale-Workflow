@@ -32,6 +32,10 @@ The short demo below shows the **exact terminal experience**, including:
   Your browser does not support the video tag.
 </video>
 
+**If the video doesn’t render in your viewer**, open it directly:
+- GitHub: https://github.com/wordsnlogic/AI-Vale-Workflow/blob/main/vale_ai_script_demo_cut_no_audio.mp4
+- Raw (best for direct playback/download): https://raw.githubusercontent.com/wordsnlogic/AI-Vale-Workflow/main/vale_ai_script_demo_cut_no_audio.mp4
+
 ---
 
 ## Why this exists
@@ -194,14 +198,44 @@ git clone https://github.com/<your-org-or-username>/ai-vale-workflow.git
 cd ai-vale-workflow
 ```
 
-### 2) Create and activate a virtual environment
+### 2) Install Vale
+
+Use a package manager so `vale` ends up on your `PATH`.
+
+**macOS (Homebrew)**
+
+```bash
+brew install vale
+```
+
+**Windows (Chocolatey)**
+
+```powershell
+choco install vale
+```
+
+**Linux (Snap)**
+
+```bash
+sudo snap install vale
+```
+
+> Prefer a manual install? Download the appropriate binary from the Vale releases page and put it somewhere on your `PATH` (for example, `/usr/local/bin`).
+
+### 3) Confirm Vale is installed
+
+```bash
+vale --version
+```
+
+### 4) Create and activate a virtual environment
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3) Install dependencies
+### 5) Install Python dependencies
 
 ```bash
 pip install openai
@@ -233,6 +267,12 @@ Before using AI, confirm Vale runs successfully in your documentation repo:
 vale path/to/docs
 ```
 
+This workflow assumes:
+
+- Vale is installed
+- `.vale.ini` is discoverable
+- Rules resolve correctly
+
 ---
 
 ## Usage
@@ -243,8 +283,28 @@ The script supports:
 - `--folder` to process a folder recursively
 - `--dry-run` to preview changes without writing to disk
 
+### Single file
+
+```bash
+python ai_vale_workflow.py --file path/to/docs/index.md
+```
+
+### Folder (recursive)
+
+```bash
+python ai_vale_workflow.py --folder path/to/docs/
+```
+
+### Dry run (recommended first)
+
 ```bash
 python ai_vale_workflow.py --folder path/to/docs/ --dry-run
+```
+
+For each issue, you’ll be prompted:
+
+```text
+Apply this change? (y/n):
 ```
 
 ---
@@ -254,13 +314,28 @@ python ai_vale_workflow.py --folder path/to/docs/ --dry-run
 This tool is intentionally conservative.
 
 It **does**:
+
 - Require human approval
 - Edit only flagged lines
+- Print file and line number confirmations
+- Encourage manual re-validation
 
 It **does not**:
+
 - Auto-rewrite files
 - Apply changes silently
 - Replace editorial judgment
+- Re-run Vale automatically
+
+---
+
+## Known limitations
+
+- Line-based replacement assumes the issue fits on one line
+- Multi-line or structural issues may require manual edits
+- Vale rule output formats may vary by rule pack
+
+These constraints are deliberate to preserve trust.
 
 ---
 
