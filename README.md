@@ -5,6 +5,7 @@ A human-in-the-loop workflow that combines **Vale** linting with **AI rewrite su
 This tool:
 
 - Runs **Vale** with `--output=JSON`
+
 - Sends only **flagged lines + Vale messages** to an OpenAI model
 - Prints a **Before / After / Vale Comment** table for review
 - Requires explicit **human approval**
@@ -18,23 +19,22 @@ This tool:
 
 ## Demo video
 
-The short demo below shows the **exact terminal experience**, including:
+GitHub does **not reliably render embedded `<video>` tags** inside README files.
 
-- Vale findings
-- AI rewrite suggestions
-- Human approval prompts
-- Line-specific edits applied to disk
+To ensure the demo is always accessible, use the links below.
 
-> Runtime: ~90 seconds · No audio · Real terminal output
+▶️ **Watch / download the demo video (recommended)**  
+https://raw.githubusercontent.com/wordsnlogic/AI-Vale-Workflow/main/vale_ai_script_demo_cut_no_audio.mp4
 
-<video controls width="100%">
-  <source src="vale_ai_script_demo_cut_no_audio.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+📄 **View the video file on GitHub**  
+https://github.com/wordsnlogic/AI-Vale-Workflow/blob/main/vale_ai_script_demo_cut_no_audio.mp4
 
-**If the video doesn’t render in your viewer**, open it directly:
-- GitHub: https://github.com/wordsnlogic/AI-Vale-Workflow/blob/main/vale_ai_script_demo_cut_no_audio.mp4
-- Raw (best for direct playback/download): https://raw.githubusercontent.com/wordsnlogic/AI-Vale-Workflow/main/vale_ai_script_demo_cut_no_audio.mp4
+**About the demo**
+
+- Runtime: ~90 seconds
+- No audio
+- Real terminal output
+- Shows Vale findings, AI suggestions, and human approvals
 
 ---
 
@@ -71,21 +71,9 @@ The examples below show **exactly what the script prints in the terminal**.
 Tables may appear vertically expanded due to fixed-width wrapping.  
 This is intentional and mirrors real CLI behavior.
 
-Each example includes:
-- A short readable summary
-- The raw terminal output for full transparency
-
 ---
 
-### Example 1: Politeness (“please”)
-
-**Summary**
-
-- Vale flags polite language
-- AI removes “please” without changing meaning
-- Writer approves the change
-
-**Exact terminal output**
+### Example: Politeness (“please”)
 
 ```text
 +--------------------+-------------------------+------------------------------------------------------------+
@@ -103,75 +91,6 @@ Apply this change? (y/n):
 
 ---
 
-### Example 2: UI interaction language (“click”)
-
-**Summary**
-
-- Vale enforces device-neutral language
-- AI rewrites UI instructions
-- Markdown formatting is preserved
-
-**Exact terminal output**
-
-```text
-+--------------------+-------------------------+------------------------------------------------------------+
-| Before AI          | After AI                | Vale Comment                                               |
-+====================+=========================+============================================================+
-| Click the Create   | Select **Create         | Avoid “click.” Use a more general verb.                    |
-| Project button to  | Project** to start a    |                                                            |
-| start a new ACME   | new ACME Cloud project. |                                                            |
-| Cloud project.     |                         |                                                            |
-+--------------------+-------------------------+------------------------------------------------------------+
-
-Apply this change? (y/n):
-```
-
----
-
-### Example 3: Complex wording → simpler language
-
-**Summary**
-
-- Vale flags unnecessarily complex phrasing
-- AI simplifies wording without semantic drift
-- Writer remains the final decision-maker
-
-**Exact terminal output**
-
-```text
-+--------------------+-------------------------+------------------------------------------------------------+
-| Before AI          | After AI                | Vale Comment                                               |
-+====================+=========================+============================================================+
-| In order to        | To authenticate, the    | Use simpler words when possible.                           |
-| successfully       | client must use a valid |                                                            |
-| authenticate, the  | token.                  |                                                            |
-| client must        |                         |                                                            |
-| utilize a valid    |                         |                                                            |
-| token.             |                         |                                                            |
-+--------------------+-------------------------+------------------------------------------------------------+
-
-Apply this change? (y/n):
-```
-
----
-
-## What gets sent to the AI
-
-For each Vale issue, the script sends:
-
-- The **exact flagged line**
-- The **Vale message**
-
-It does **not** send:
-
-- The entire file
-- Surrounding paragraphs
-- The full documentation set
-
-This design keeps the workflow safer, predictable, and auditable.
-
----
-
 ## Requirements
 
 ### Tools
@@ -183,10 +102,6 @@ This design keeps the workflow safer, predictable, and auditable.
   - A `.vale.ini`
   - Vale rule styles (for example, Microsoft)
 
-### Python dependency
-
-- `openai`
-
 ---
 
 ## Install
@@ -194,13 +109,11 @@ This design keeps the workflow safer, predictable, and auditable.
 ### 1) Clone this repo
 
 ```bash
-git clone https://github.com/<your-org-or-username>/ai-vale-workflow.git
-cd ai-vale-workflow
+git clone https://github.com/wordsnlogic/AI-Vale-Workflow.git
+cd AI-Vale-Workflow
 ```
 
 ### 2) Install Vale
-
-Use a package manager so `vale` ends up on your `PATH`.
 
 **macOS (Homebrew)**
 
@@ -220,128 +133,24 @@ choco install vale
 sudo snap install vale
 ```
 
-> Prefer a manual install? Download the appropriate binary from the Vale releases page and put it somewhere on your `PATH` (for example, `/usr/local/bin`).
-
-### 3) Confirm Vale is installed
+Verify:
 
 ```bash
 vale --version
 ```
 
-### 4) Create and activate a virtual environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 5) Install Python dependencies
-
-```bash
-pip install openai
-```
-
----
-
-## Configure OpenAI API key
-
-Set your API key as an environment variable:
-
-```bash
-export OPENAI_API_KEY="YOUR_KEY_HERE"
-```
-
-If the key is missing, the script exits with:
-
-```text
-ERROR: OPENAI_API_KEY not found in environment.
-```
-
----
-
-## Ensure Vale works first
-
-Before using AI, confirm Vale runs successfully in your documentation repo:
-
-```bash
-vale path/to/docs
-```
-
-This workflow assumes:
-
-- Vale is installed
-- `.vale.ini` is discoverable
-- Rules resolve correctly
-
 ---
 
 ## Usage
 
-The script supports:
-
-- `--file` to process a single Markdown file
-- `--folder` to process a folder recursively
-- `--dry-run` to preview changes without writing to disk
-
-### Single file
-
-```bash
-python ai_vale_workflow.py --file path/to/docs/index.md
-```
-
-### Folder (recursive)
-
-```bash
-python ai_vale_workflow.py --folder path/to/docs/
-```
-
-### Dry run (recommended first)
-
 ```bash
 python ai_vale_workflow.py --folder path/to/docs/ --dry-run
-```
-
-For each issue, you’ll be prompted:
-
-```text
-Apply this change? (y/n):
 ```
 
 ---
 
 ## Safety and editorial control
 
-This tool is intentionally conservative.
-
-It **does**:
-
-- Require human approval
-- Edit only flagged lines
-- Print file and line number confirmations
-- Encourage manual re-validation
-
-It **does not**:
-
-- Auto-rewrite files
-- Apply changes silently
-- Replace editorial judgment
-- Re-run Vale automatically
-
----
-
-## Known limitations
-
-- Line-based replacement assumes the issue fits on one line
-- Multi-line or structural issues may require manual edits
-- Vale rule output formats may vary by rule pack
-
-These constraints are deliberate to preserve trust.
-
----
-
-## Recommended team workflow
-
-1. Run with `--dry-run` first
-2. Apply changes in small batches
-3. Re-run Vale and review diffs
-4. Merge through standard PR review
+- Requires human approval
+- Edits only flagged lines
+- Never rewrites files automatically
