@@ -34,7 +34,7 @@ https://github.com/wordsnlogic/AI-Vale-Workflow/blob/main/vale_ai_script_demo_cu
 
 **About the demo**
 
-- Runtime: ~90 seconds
+- Runtime: ~35 seconds
 - No audio
 - Real terminal output
 - Shows Vale findings, AI suggestions, and human approvals
